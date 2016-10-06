@@ -1,0 +1,24 @@
+language: java
+
+jdk: oraclejdk8
+env:
+  global: ORG_GRADLE_PROJECT_downloadIdeaSources=false
+  matrix:
+        # FIXME: use this when Grammar Kit supports it
+        # - ORG_GRADLE_PROJECT_ideaVersion=LATEST-EAP-SNAPSHOT
+        - ORG_GRADLE_PROJECT_ideaVersion=162.1812.8
+        - ORG_GRADLE_PROJECT_ideaVersion=15.0.4
+
+before_script:
+  - curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nightly
+  - export PATH=$HOME/.cargo/bin:$PATH
+  - cargo install rustfmt
+
+# https://docs.travis-ci.com/user/languages/java/#Caching
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
