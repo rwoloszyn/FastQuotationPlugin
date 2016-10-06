@@ -1,0 +1,40 @@
+<idea-plugin version="2">
+    <id>com.debugduck.design.fastquotation.plugin</id>
+    <name>Fast quotation</name>
+    <version>1.0</version>
+    <vendor email="rafal@debugduckdesign.com" url="http://www.debugduckdesign.com">DebugDuck Design</vendor>
+
+    <description><![CDATA[
+      This plugins allow to simply and fast wrap around
+      text in quotations, parenthesis, square brackets
+      and any other brackets with double button press in selected text.
+      It speeds-up casting, String creation etc...</em>
+    ]]></description>
+
+    <change-notes><![CDATA[
+      Add change notes here.<br>
+      <em>most HTML tags may be used</em>
+    ]]>
+    </change-notes>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+    <idea-version since-build="141.0"/>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    <depends>com.intellij.modules.lang</depends>
+    -->
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+    </extensions>
+
+    <actions>
+        <action id="FastQuotationPlugin.com.debugduck.design.fastquotation.plugin.FastQuotationAction" class="com.debugduck.design.fastquotation.plugin.FastQuotationAction" text="Fast quote this"
+                description="Illustrates how to plug an action in">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+        </action>
+    </actions>
+
+</idea-plugin>
