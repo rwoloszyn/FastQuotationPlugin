@@ -4,9 +4,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.command.WriteCommandAction;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.SelectionModel;
+import com.intellij.openapi.editor.*;
 import com.intellij.openapi.editor.actionSystem.EditorActionManager;
 import com.intellij.openapi.editor.actionSystem.TypedAction;
 import com.intellij.openapi.project.Project;
@@ -17,7 +15,7 @@ public class FastQuotationAction extends AnAction {
     static {
         final EditorActionManager actionManager = EditorActionManager.getInstance();
         final TypedAction typedAction = actionManager.getTypedAction();
-        typedAction.setupHandler(new FastTypedQuotationHandler());
+        typedAction.setupHandler(new FastTypedQuotationHandler(typedAction.getHandler()));
     }
 
     @Override
