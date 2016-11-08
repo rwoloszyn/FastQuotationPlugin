@@ -33,11 +33,13 @@ public class FastTypedQuotationHandler implements TypedActionHandler {
     private int  charCount = 0;
 
 
-    private char SUPP_CHARS[] = { '\'', '\"', '[', ']', '(', ')', '`', '{', '}', '/', '\\', '|'};
+    private char SUPP_CHARS[] = { '\'', '"', '[', ']', '(', ')', '`', '{', '}', '/', '\\', '|'};
     private char COMPL_CHAR[] = {'[', ']', '(', ')', '{', '}' };
 
 
     public boolean moveCaretToEnd = true;
+    public boolean addColon = true;  //This will require language check. It's ok for java but python ?!
+    public boolean addNewLine = true;
 
     public FastTypedQuotationHandler(TypedActionHandler defaultHandler){
         this.defaultHandler = defaultHandler;
@@ -68,15 +70,37 @@ public class FastTypedQuotationHandler implements TypedActionHandler {
 
                 char complementaryChar = getComplementaryChar(typedChar);
 
-                //Support multi caret
-                for(Caret carret : caretModel.getAllCarets()){
-                    document.insertString(carret.getSelectionStart(), String.valueOf(typedChar));
-                    document.insertString(carret.getSelectionEnd(), String.valueOf(complementaryChar));
+                char startingChar = typedChar;
+                char endingChar = complementaryChar;
 
-                    //Move carret to end of quotated string
-                    if(moveCaretToEnd){
-                        caretModel.moveCaretRelatively(carret.getSelectionEnd(), 0, false,false,false);
+                if(!isLeftChar(typedChar)){
+                    startingChar = complementaryChar;
+                    endingChar = typedChar;
+                }
+
+                //Support multi caret
+                for(Caret caret : caretModel.getAllCarets()){
+
+                    //Don't do anything on empty strings
+                    if(caret.getSelectedText() == null || caret.getSelectedText().isEmpty()){
+                        return;
                     }
+
+                    document.insertString(caret.getSelectionStart(), String.valueOf(startingChar));
+                    document.insertString(caret.getSelectionEnd(), String.valueOf(endingChar));
+
+                    if(addColon){
+                        document.insertString(caret.getSelectionEnd() + 1, ";");
+                    }
+
+                    if(moveCaretToEnd){
+                        caretModel.moveCaretRelatively(caret.getSelectionEnd(), 0, false,false,false);
+                    }
+
+                    if(addNewLine){
+                        document.insertString(caret.getSelectionEnd(), String.valueOf('\n'));
+                    }
+
                 }
             }
         };
@@ -96,16 +120,36 @@ public class FastTypedQuotationHandler implements TypedActionHandler {
 
     }
 
+
+    private boolean isLeftChar(char typedChar) {
+        int charIndex = Arrays.binarySearch(COMPL_CHAR, typedChar);
+        boolean hasComplementary = charIndex > 0;
+        if (hasComplementary) {
+            return charIndex % 2 == 0;
+        }
+        return false;
+    }
+
     /**
      * Checks if typed character have complementary equivalent
+     *
      * @param typedChar - typed character
      * @return equivalent complementary character if found or typedChar otherwise
      */
-    private char getComplementaryChar(char typedChar){
-        boolean isComplementaryChar = Arrays.binarySearch(COMPL_CHAR, typedChar) > 0;
-        int complIndex = Arrays.binarySearch(COMPL_CHAR, typedChar) + 1;
-        char complementaryChar =  isComplementaryChar ? COMPL_CHAR[complIndex] : typedChar;
+    private char getComplementaryChar(char typedChar) {
+        int complIndex = 0;
+        char complementaryChar = typedChar;
+        int charIndex = Arrays.binarySearch(COMPL_CHAR, typedChar);
+        boolean hasComplementary = charIndex > 0;
+        if (hasComplementary) {
+            if (charIndex % 2 == 0) {
+                complIndex = charIndex + 1;
+            } else {
+                complIndex = charIndex - 1;
 
+            }
+            return COMPL_CHAR[complIndex];
+        }
         return complementaryChar;
     }
 }
